@@ -8,7 +8,7 @@
 const double t_max = 50.0; // Максимальное время
 const double x_max = 60.0; // Максимальная координата
 
-double t_step = 0.1; // Шаг по времени
+double t_step = 0.1;       // Шаг по времени
 const double x_step = 0.1; // Шаг по координате
 
 const double alpha = 1.0; // Коэффициент переноса
@@ -36,7 +36,8 @@ void fill_layer(int knot_t, int knot_x, std::vector<std::vector<double>> &u) {
 // Вывод результатов в файл
 void output_solution(int num_knots_t, int num_knots_x,
                      const std::vector<std::vector<double>> &u) {
-    std::ofstream results{"results.csv", std::ofstream::out | std::ofstream::trunc};
+    std::ofstream results{"results.csv",
+                          std::ofstream::out | std::ofstream::trunc};
     results << "x,t,u\n";
 
     for (int knot_t = 0; knot_t < num_knots_t; ++knot_t) {
