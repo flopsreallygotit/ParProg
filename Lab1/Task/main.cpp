@@ -7,8 +7,10 @@
 
 const double t_max = 50.0; // Максимальное время
 const double x_max = 60.0; // Максимальная координата
+
 const double t_step = 0.1; // Шаг по времени
 const double x_step = 0.1; // Шаг по координате
+
 const double alpha = 1.0;  // Коэффициент переноса
 
 const int ROOT = 0; // Ранг главного процесса
