@@ -1,7 +1,7 @@
 #include <cmath>
+#include <vector>
 #include <fstream>
 #include <iostream>
-#include <vector>
 
 #include <mpi.h>
 
@@ -54,14 +54,12 @@ void output_results(int num_knots_t, int num_knots_x,
 void init_grid(int num_knots_x, int num_knots_t,
                std::vector<std::vector<double>> &u) {
     // Инициализация по времени (t=0)
-    for (int m = 0; m < num_knots_x; ++m) {
+    for (int m = 0; m < num_knots_x; ++m)
         u[0][m] = fi(m * x_step);
-    }
 
     // Граничное условие (x=0)
-    for (int k = 0; k < num_knots_t; ++k) {
+    for (int k = 0; k < num_knots_t; ++k)
         u[k][0] = ksi(k * t_step);
-    }
 }
 
 // Параллельное решение
