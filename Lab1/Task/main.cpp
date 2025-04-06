@@ -1,17 +1,17 @@
 #include <cmath>
-#include <vector>
 #include <fstream>
 #include <iostream>
+#include <vector>
 
 #include <mpi.h>
 
 const double t_max = 50.0; // Максимальное время
 const double x_max = 60.0; // Максимальная координата
 
-const double t_step = 0.1; // Шаг по времени
+double t_step = 0.1; // Шаг по времени
 const double x_step = 0.1; // Шаг по координате
 
-const double alpha = 1.0;  // Коэффициент переноса
+const double alpha = 1.0; // Коэффициент переноса
 
 const int ROOT = 0; // Ранг главного процесса
 
@@ -34,9 +34,9 @@ void fill_layer(int knot_t, int knot_x, std::vector<std::vector<double>> &u) {
 }
 
 // Вывод результатов в файл
-void output_results(int num_knots_t, int num_knots_x,
-                    const std::vector<std::vector<double>> &u) {
-    std::ofstream results("results.csv");
+void output_solution(int num_knots_t, int num_knots_x,
+                     const std::vector<std::vector<double>> &u) {
+    std::ofstream results{"results.csv", std::ofstream::out | std::ofstream::trunc};
     results << "x,t,u\n";
 
     for (int knot_t = 0; knot_t < num_knots_t; ++knot_t) {
@@ -48,6 +48,11 @@ void output_results(int num_knots_t, int num_knots_x,
             results << x << "," << t << "," << u[knot_t][knot_x] << "\n";
         }
     }
+}
+
+void output_statistics(int size, double exec_time) {
+    std::ofstream statistics{"statistics.csv", std::ios::app};
+    statistics << size << "," << exec_time << "," << t_step << "\n";
 }
 
 // Инициализация сетки
@@ -132,6 +137,11 @@ int main(int argc, char **argv) {
     int num_knots_x = static_cast<int>(x_max / x_step);
     int num_knots_t = static_cast<int>(t_max / t_step);
 
+    // Изменение шага по времени переменной среды
+    std::string t_step_env = getenv("T_STEP");
+    if (t_step_env.size())
+        t_step = std::stod(t_step_env);
+
     // Инициализация сетки
     std::vector<std::vector<double>> u(num_knots_t,
                                        std::vector<double>(num_knots_x));
@@ -147,10 +157,8 @@ int main(int argc, char **argv) {
     double end_time = MPI_Wtime();
 
     if (rank == ROOT) {
-        output_results(num_knots_t, num_knots_x, u);
-
-        std::cout << "Execution time: " << end_time - start_time << " seconds"
-                  << std::endl;
+        output_solution(num_knots_t, num_knots_x, u);
+        output_statistics(size, end_time - start_time);
     }
 
     MPI_Finalize();
