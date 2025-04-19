@@ -1,14 +1,13 @@
-#include <algorithm>
 #include <chrono>
-#include <cstddef>
 #include <cstdlib>
 #include <iostream>
-#include <vector>
+
+#include "sorters.h"
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 class Benchmark final {
   public:
-    using benchmark_t = std::vector<int>;
-
     using sort_clock_t = std::chrono::high_resolution_clock;
     using sort_time_t = std::chrono::nanoseconds;
 
@@ -16,30 +15,50 @@ class Benchmark final {
         : m_size(benchmark_size), m_benchmark(benchmark_size) {
         for (size_t i = 0; i < benchmark_size; ++i)
             m_benchmark[i] = std::rand();
+
+        m_sorted_benchmark = sorters::sort(m_benchmark);
     }
 
-    void run_sort_impl(void (*sorter)(benchmark_t::iterator,
-                                      benchmark_t::iterator),
+    bool sort_succeed(benchmark_t &sort_result) {
+        return sort_result == m_sorted_benchmark;
+    }
+
+    void run_sort_impl(benchmark_t (*sorter)(benchmark_t benchmark_copy),
                        const char *sorter_name) {
         sort_clock_t::time_point start = sort_clock_t::now();
-        sorter(m_benchmark.begin(), m_benchmark.end());
+        benchmark_t sort_result =
+            sorter(m_benchmark); // Copies benchmark because we need to rerun
+                                 // new funcs on same benchmark
         sort_clock_t::time_point end = sort_clock_t::now();
 
         long time =
             std::chrono::duration_cast<sort_time_t>(end - start).count();
-        std::cout << "Time needed for `" << sorter_name << "` on size `"
-                  << m_size << "`: `" << time << "` ns;\n";
+
+        std::cout << (sort_succeed(sort_result) ? "SUCCESS" : "FAIL") << ": `"
+                  << sorter_name << "` on size `" << m_size << "`: `" << time
+                  << "` ns;\n";
     }
 
   private:
     std::size_t m_size;
+
     benchmark_t m_benchmark;
+    benchmark_t m_sorted_benchmark;
 };
 
 #define run_sort(sorter) run_sort_impl(sorter, #sorter)
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 int main() {
-    Benchmark default_sorter(10000);
-    default_sorter.run_sort(std::sort);
-    default_sorter.run_sort(std::stable_sort);
+    std::vector<std::size_t> benchmark_sizes = {10, 100, 1000, 10000, 100000};
+
+    for (std::size_t benchmark_size : benchmark_sizes) {
+        Benchmark current_benchmark(benchmark_size);
+
+        current_benchmark.run_sort(sorters::qsort);
+        current_benchmark.run_sort(sorters::psort);
+    }
 }
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
