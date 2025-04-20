@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "sorters.h"
+#include "sorters.hpp"
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -61,6 +61,8 @@ int main() {
         current_benchmark.run_sort(sorters::std_quick_sort);
         current_benchmark.run_sort(sorters::custom_par_sort);
     }
+
+    return 0;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
