@@ -1,45 +1,9 @@
 #include <algorithm>
-#include <cstddef>
 #include <cstdlib>
 #include <execution>
 #include <thread>
 
 #include "sorters.h"
-
-namespace sorters::parallel_sorter { // TODO[flops]: Rename benchmark
-
-class ParrallelSorter final {
-  public:
-    ParrallelSorter(unsigned int threads_num)
-        : m_threads_num(threads_num), threads(threads_num) {}
-
-    void sort(benchmark_t &m_target) {
-        // size_t chunk_size = m_target.size() / m_threads_num;
-        // size_t remaining  = m_target.size() % m_threads_num;
-
-        // size_t start = 0;
-        // for (size_t i = 0; i < m_threads_num; ++i) {
-        //     size_t end = start + chunk_size + (i < remaining ? 1 : 0);
-
-        //     threads.emplace_back();
-
-        //     start = end;
-        // }
-
-        // for (std::thread &thread : threads)
-        //     thread.join();
-    }
-
-  private:
-    void worker_sort(benchmark_t &target, size_t start, size_t end) {
-        std::sort(target.begin() + start, target.begin() + end);
-    }
-
-    unsigned int m_threads_num = 0;
-    std::vector<std::thread> threads;
-};
-
-} // namespace sorters::parallel_sorter
 
 namespace sorters {
 
@@ -49,13 +13,13 @@ benchmark_t sort(benchmark_t benchmark) {
     return benchmark;
 }
 
-benchmark_t par_exec_sort(benchmark_t benchmark) {
+benchmark_t std_par_sort(benchmark_t benchmark) {
     std::sort(std::execution::par, benchmark.begin(), benchmark.end());
 
     return benchmark;
 }
 
-benchmark_t quick_sort(benchmark_t benchmark) {
+benchmark_t std_quick_sort(benchmark_t benchmark) {
     std::qsort(benchmark.data(), benchmark.size(),
                sizeof(decltype(benchmark)::value_type),
                [](const void *x, const void *y) {
@@ -73,11 +37,43 @@ benchmark_t quick_sort(benchmark_t benchmark) {
     return benchmark;
 }
 
-benchmark_t parallel_sort(benchmark_t benchmark) {
-    parallel_sorter::ParrallelSorter sorter{
-        std::thread::hardware_concurrency()};
+static int partition(benchmark_t &target, int left, int right) {
+    int separator = target[right], i = left - 1;
 
-    sorter.sort(benchmark);
+    for (int j = left; j < right; ++j)
+        if (target[j] < separator)
+            std::swap(target[++i], target[j]);
+
+    std::swap(target[i + 1], target[right]);
+
+    return i + 1;
+}
+
+static void par_qsort(benchmark_t &target, int left, int right,
+                      unsigned depth = 0) {
+    if (left >= right)
+        return;
+
+    ++depth;
+
+    int separator = partition(target, left, right);
+    if (depth <= 8) {
+        std::thread left_sorter{par_qsort, std::ref(target), left,
+                                separator - 1, depth};
+
+        par_qsort(target, separator + 1, right, depth);
+
+        left_sorter.join();
+    }
+
+    else {
+        par_qsort(target, left, separator - 1, depth);
+        par_qsort(target, separator + 1, right, depth);
+    }
+}
+
+benchmark_t custom_par_sort(benchmark_t benchmark) {
+    par_qsort(benchmark, 0, benchmark.size() - 1, 0);
 
     return benchmark;
 }

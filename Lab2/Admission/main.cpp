@@ -36,7 +36,7 @@ class Benchmark final {
             std::chrono::duration_cast<sort_time_t>(end - start).count();
 
         std::cout << (sort_succeed(sort_result) ? "SUCCESS" : "FAIL") << ": `"
-                  << sorter_name << "` on size `" << m_size << "`: `" << time
+                  << sorter_name << "` on size `" << m_size << "`:\t`" << time
                   << "` ns;\n";
     }
 
@@ -52,14 +52,14 @@ class Benchmark final {
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 int main() {
-    std::vector<size_t> benchmark_sizes = {100000, 10000000};
+    std::vector<size_t> benchmark_sizes = {1 << 20, 1 << 21, 1 << 22};
 
     for (size_t benchmark_size : benchmark_sizes) {
         Benchmark current_benchmark{benchmark_size};
 
-        current_benchmark.run_sort(sorters::par_exec_sort);
-        current_benchmark.run_sort(sorters::quick_sort);
-        current_benchmark.run_sort(sorters::parallel_sort);
+        current_benchmark.run_sort(sorters::std_par_sort);
+        current_benchmark.run_sort(sorters::std_quick_sort);
+        current_benchmark.run_sort(sorters::custom_par_sort);
     }
 }
 
