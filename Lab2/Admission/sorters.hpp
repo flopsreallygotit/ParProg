@@ -28,9 +28,9 @@ static int qsort_compare(const void *lhs, const void *rhs) {
     const T casted_lhs = *static_cast<const T *>(lhs);
     const T casted_rhs = *static_cast<const T *>(rhs);
 
-    if (lhs < rhs)
+    if (casted_lhs < casted_rhs)
         return -1;
-    else if (lhs > rhs)
+    else if (casted_lhs > casted_rhs)
         return 1;
 
     return 0;
