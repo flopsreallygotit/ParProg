@@ -1,10 +1,8 @@
 #include <algorithm>
 #include <chrono>
 #include <cstdlib>
-#include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <type_traits>
 
 #include "sorters.hpp"
 
@@ -15,9 +13,9 @@ template <typename T> class Benchmark final {
     using sort_clock_t = std::chrono::high_resolution_clock;
     using sort_time_t = std::chrono::nanoseconds;
 
-    Benchmark(size_t benchmark_size)
-        : m_size(benchmark_size), m_benchmark(benchmark_size),
-          m_stats("stats.csv", std::ios::app) {
+    Benchmark(size_t benchmark_size, size_t trials_count = 5)
+        : m_size(benchmark_size), m_trials_count(trials_count),
+          m_benchmark(benchmark_size), m_stats("stats.csv", std::ios::app) {
         std::generate(m_benchmark.begin(), m_benchmark.end(),
                       []() { return std::rand(); });
 
@@ -30,12 +28,19 @@ template <typename T> class Benchmark final {
                   << "> benchmark with size `" << m_size << "`\n";
     }
 
+    void test_impl(std::vector<T> (*sorter)(std::vector<T> benchmark_copy),
+                   const char *sorter_name) {
+        for (size_t trial = 0; trial < m_trials_count; ++trial)
+            run_sort(sorter, sorter_name);
+    }
+
+  private:
     bool sort_succeed(std::vector<T> &sort_result) {
         return sort_result == m_sorted_benchmark;
     }
 
-    void run_sort_impl(std::vector<T> (*sorter)(std::vector<T> benchmark_copy),
-                       const char *sorter_name) {
+    void run_sort(std::vector<T> (*sorter)(std::vector<T> benchmark_copy),
+                  const char *sorter_name) {
         sort_clock_t::time_point start = sort_clock_t::now();
         std::vector<T> sort_result =
             sorter(m_benchmark); // Copies benchmark because we need to rerun
@@ -51,35 +56,32 @@ template <typename T> class Benchmark final {
             std::cerr << "Fail on `" << sorter_name << "`\n";
     }
 
-  private:
-    std::ofstream m_stats;
-
     size_t m_size;
-
+    size_t m_trials_count;
+    std::ofstream m_stats;
     std::vector<T> m_benchmark;
     std::vector<T> m_sorted_benchmark;
 };
 
-#define run_sort(sorter) run_sort_impl(sorter, #sorter)
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#define test(sorter) test_impl(sorter, #sorter)
+
 int main() {
-    size_t trials_count = 3;
     std::vector<size_t> benchmark_sizes = {1 << 5,  1 << 10, 1 << 15,
                                            1 << 20, 1 << 21, 1 << 22};
 
     for (size_t benchmark_size : benchmark_sizes) {
         Benchmark<int> current_benchmark{benchmark_size};
 
-        for (size_t trial = 0; trial < trials_count; ++trial) {
-            current_benchmark.run_sort(sorters::std_par_sort);
-            current_benchmark.run_sort(sorters::std_quick_sort);
-            current_benchmark.run_sort(sorters::custom_par_sort);
-        }
+        current_benchmark.test(sorters::std_par_sort);
+        current_benchmark.test(sorters::std_quick_sort);
+        current_benchmark.test(sorters::custom_par_sort);
     }
 
     return 0;
 }
+
+#undef test
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
