@@ -15,7 +15,7 @@ template <typename T> class Benchmark final {
 
     Benchmark(size_t benchmark_size, size_t trials_count = 5)
         : m_size(benchmark_size), m_trials_count(trials_count),
-          m_benchmark(benchmark_size), m_stats("stats.csv", std::ios::app) {
+          m_benchmark(benchmark_size), m_stats("statistics.csv", std::ios::app) {
         std::generate(m_benchmark.begin(), m_benchmark.end(),
                       []() { return std::rand(); });
 
