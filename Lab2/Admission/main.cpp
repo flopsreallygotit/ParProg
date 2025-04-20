@@ -13,9 +13,10 @@ template <typename T> class Benchmark final {
     using sort_clock_t = std::chrono::high_resolution_clock;
     using sort_time_t = std::chrono::nanoseconds;
 
-    Benchmark(size_t benchmark_size, size_t trials_count = 5)
+    Benchmark(size_t benchmark_size, size_t trials_count = 10)
         : m_size(benchmark_size), m_trials_count(trials_count),
-          m_benchmark(benchmark_size), m_stats("statistics.csv", std::ios::app) {
+          m_benchmark(benchmark_size),
+          m_stats("statistics.csv", std::ios::app) {
         std::generate(m_benchmark.begin(), m_benchmark.end(),
                       []() { return std::rand(); });
 
@@ -74,6 +75,7 @@ int main() {
     for (size_t benchmark_size : benchmark_sizes) {
         Benchmark<int> current_benchmark{benchmark_size};
 
+        current_benchmark.test(sorters::sort);
         current_benchmark.test(sorters::std_par_sort);
         current_benchmark.test(sorters::std_quick_sort);
         current_benchmark.test(sorters::custom_par_sort);
