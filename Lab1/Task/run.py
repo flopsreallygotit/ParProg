@@ -20,3 +20,5 @@ def run_with_different_steps(iter_step=1, steps_num=10, time_order=0.1):
 
 if __name__ == "__main__":
     run_with_different_steps()
+
+    run_with_different_sizes(max_processors_num=1) # For properly image generation

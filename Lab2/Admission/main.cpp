@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <chrono>
 #include <cstdlib>
 #include <iostream>
@@ -11,10 +12,10 @@ class Benchmark final {
     using sort_clock_t = std::chrono::high_resolution_clock;
     using sort_time_t = std::chrono::nanoseconds;
 
-    Benchmark(std::size_t benchmark_size)
+    Benchmark(size_t benchmark_size)
         : m_size(benchmark_size), m_benchmark(benchmark_size) {
-        for (size_t i = 0; i < benchmark_size; ++i)
-            m_benchmark[i] = std::rand();
+        std::generate(m_benchmark.begin(), m_benchmark.end(),
+                      []() { return std::rand(); });
 
         m_sorted_benchmark = sorters::sort(m_benchmark);
     }
@@ -40,7 +41,7 @@ class Benchmark final {
     }
 
   private:
-    std::size_t m_size;
+    size_t m_size;
 
     benchmark_t m_benchmark;
     benchmark_t m_sorted_benchmark;
@@ -51,13 +52,14 @@ class Benchmark final {
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 int main() {
-    std::vector<std::size_t> benchmark_sizes = {10, 100, 1000, 10000, 100000};
+    std::vector<size_t> benchmark_sizes = {100000, 10000000};
 
-    for (std::size_t benchmark_size : benchmark_sizes) {
-        Benchmark current_benchmark(benchmark_size);
+    for (size_t benchmark_size : benchmark_sizes) {
+        Benchmark current_benchmark{benchmark_size};
 
-        current_benchmark.run_sort(sorters::qsort);
-        current_benchmark.run_sort(sorters::psort);
+        current_benchmark.run_sort(sorters::par_exec_sort);
+        current_benchmark.run_sort(sorters::quick_sort);
+        current_benchmark.run_sort(sorters::parallel_sort);
     }
 }
 
