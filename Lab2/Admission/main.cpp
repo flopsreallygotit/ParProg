@@ -7,7 +7,7 @@
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-class Benchmark final {
+template <typename T> class Benchmark final {
   public:
     using sort_clock_t = std::chrono::high_resolution_clock;
     using sort_time_t = std::chrono::nanoseconds;
@@ -20,14 +20,14 @@ class Benchmark final {
         m_sorted_benchmark = sorters::sort(m_benchmark);
     }
 
-    bool sort_succeed(benchmark_t &sort_result) {
+    bool sort_succeed(std::vector<T> &sort_result) {
         return sort_result == m_sorted_benchmark;
     }
 
-    void run_sort_impl(benchmark_t (*sorter)(benchmark_t benchmark_copy),
+    void run_sort_impl(std::vector<T> (*sorter)(std::vector<T> benchmark_copy),
                        const char *sorter_name) {
         sort_clock_t::time_point start = sort_clock_t::now();
-        benchmark_t sort_result =
+        std::vector<T> sort_result =
             sorter(m_benchmark); // Copies benchmark because we need to rerun
                                  // new funcs on same benchmark
         sort_clock_t::time_point end = sort_clock_t::now();
@@ -43,8 +43,8 @@ class Benchmark final {
   private:
     size_t m_size;
 
-    benchmark_t m_benchmark;
-    benchmark_t m_sorted_benchmark;
+    std::vector<T> m_benchmark;
+    std::vector<T> m_sorted_benchmark;
 };
 
 #define run_sort(sorter) run_sort_impl(sorter, #sorter)
@@ -55,7 +55,7 @@ int main() {
     std::vector<size_t> benchmark_sizes = {1 << 20, 1 << 21, 1 << 22};
 
     for (size_t benchmark_size : benchmark_sizes) {
-        Benchmark current_benchmark{benchmark_size};
+        Benchmark<int> current_benchmark{benchmark_size};
 
         current_benchmark.run_sort(sorters::std_par_sort);
         current_benchmark.run_sort(sorters::std_quick_sort);

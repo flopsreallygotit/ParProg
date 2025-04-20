@@ -7,19 +7,19 @@
 
 namespace sorters {
 
-benchmark_t sort(benchmark_t benchmark) {
+std::vector<int> sort(std::vector<int> benchmark) {
     std::sort(benchmark.begin(), benchmark.end());
 
     return benchmark;
 }
 
-benchmark_t std_par_sort(benchmark_t benchmark) {
+std::vector<int> std_par_sort(std::vector<int> benchmark) {
     std::sort(std::execution::par, benchmark.begin(), benchmark.end());
 
     return benchmark;
 }
 
-benchmark_t std_quick_sort(benchmark_t benchmark) {
+std::vector<int> std_quick_sort(std::vector<int> benchmark) {
     std::qsort(benchmark.data(), benchmark.size(),
                sizeof(decltype(benchmark)::value_type),
                [](const void *x, const void *y) {
@@ -37,10 +37,11 @@ benchmark_t std_quick_sort(benchmark_t benchmark) {
     return benchmark;
 }
 
-static int partition(benchmark_t &target, int left, int right) {
-    int separator = target[right], i = left - 1;
+static int sort_part(std::vector<int> &target, ssize_t left, ssize_t right) {
+    int separator = target[right];
+    ssize_t i = left - 1;
 
-    for (int j = left; j < right; ++j)
+    for (ssize_t j = left; j < right; ++j)
         if (target[j] < separator)
             std::swap(target[++i], target[j]);
 
@@ -49,14 +50,14 @@ static int partition(benchmark_t &target, int left, int right) {
     return i + 1;
 }
 
-static void par_qsort(benchmark_t &target, int left, int right,
+static void par_qsort(std::vector<int> &target, ssize_t left, ssize_t right,
                       unsigned depth = 0) {
     if (left >= right)
         return;
 
     ++depth;
 
-    int separator = partition(target, left, right);
+    ssize_t separator = sort_part(target, left, right);
     if (depth <= 8) {
         std::thread left_sorter{par_qsort, std::ref(target), left,
                                 separator - 1, depth};
@@ -72,8 +73,8 @@ static void par_qsort(benchmark_t &target, int left, int right,
     }
 }
 
-benchmark_t custom_par_sort(benchmark_t benchmark) {
-    par_qsort(benchmark, 0, benchmark.size() - 1, 0);
+std::vector<int> custom_par_sort(std::vector<int> benchmark) {
+    par_qsort(benchmark, 0, benchmark.size() - 1);
 
     return benchmark;
 }
