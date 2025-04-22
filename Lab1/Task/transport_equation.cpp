@@ -139,9 +139,8 @@ int main(int argc, char **argv) {
     int num_knots_t = static_cast<int>(t_max / t_step);
 
     // Изменение шага по времени переменной среды
-    std::string t_step_env = getenv("T_STEP");
-    if (t_step_env.size())
-        t_step = std::stod(t_step_env);
+    std::string t_step_env = getenv("T_STEP") ? getenv("T_STEP") : "0.1";
+    t_step = std::stod(t_step_env);
 
     // Инициализация сетки
     std::vector<std::vector<double>> u(num_knots_t,

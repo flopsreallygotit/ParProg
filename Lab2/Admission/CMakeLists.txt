@@ -5,7 +5,8 @@ add_executable(sort_compare sort_compare.cpp)
 target_compile_options(sort_compare PRIVATE -O3 -pthread)
 
 enable_testing()
+
 add_test(
-    NAME ParallelSortTest
+    NAME sort_compare_test
     COMMAND sort_compare
 )
