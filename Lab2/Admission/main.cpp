@@ -10,9 +10,6 @@
 
 template <typename T> class Benchmark final {
   public:
-    using sort_clock_t = std::chrono::high_resolution_clock;
-    using sort_time_t = std::chrono::nanoseconds;
-
     Benchmark(size_t benchmark_size, size_t trials_count = 10)
         : m_size(benchmark_size), m_trials_count(trials_count),
           m_benchmark(benchmark_size),
@@ -42,6 +39,9 @@ template <typename T> class Benchmark final {
 
     void run_sort(std::vector<T> (*sorter)(std::vector<T> benchmark_copy),
                   const char *sorter_name) {
+        using sort_clock_t = std::chrono::high_resolution_clock;
+        using sort_time_t = std::chrono::nanoseconds;
+    
         sort_clock_t::time_point start = sort_clock_t::now();
         std::vector<T> sort_result =
             sorter(m_benchmark); // Copies benchmark because we need to rerun
