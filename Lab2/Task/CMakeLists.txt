@@ -6,3 +6,5 @@ target_compile_options(pipe_communication PRIVATE -O3)
 target_compile_definitions(pipe_communication PRIVATE $<$<CONFIG:Debug>:DEBUG>)
 
 add_executable(thread_communication thread_communication.cpp)
+target_compile_options(thread_communication PRIVATE -O3)
+target_compile_definitions(thread_communication PRIVATE $<$<CONFIG:Debug>:DEBUG>)
