@@ -2,7 +2,11 @@ cmake_minimum_required(VERSION 3.22)
 project(AdmissionMPI)
 
 find_package(MPI REQUIRED)
-set(CMAKE_CXX_COMPILER mpicxx)
+include_directories(${MPI_INCLUDE_PATH})
 
-add_executable(communication_time communication_time.cpp)
+add_executable(mpi_communication mpi_communication.cpp)
+target_link_libraries(mpi_communication ${MPI_CXX_LIBRARIES})
+
 add_executable(pi_calculation pi_calculation.cpp)
+target_link_libraries(pi_calculation ${MPI_CXX_LIBRARIES})
+

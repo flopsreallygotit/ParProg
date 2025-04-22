@@ -1,10 +1,10 @@
 import os
-import subprocess
+import subprocess # TODO cmake custom command with MPIEXEC
 
 
 def run_with_different_sizes(max_processors_num=5):
     for processors_num in range(1, max_processors_num + 1):
-        args = ["mpirun", "-np", str(processors_num), "./main"]
+        args = ["mpirun", "-np", str(processors_num), "./transport_equation"]
 
         subprocess.run(args)
 
