@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "common_benchmark.hpp"
+#include "benchmark.hpp"
 
 static void get_pipe_fds(int &read_fd, int &write_fd) {
     int pipe_fd[] = {0, 0};
@@ -59,7 +59,7 @@ static void pipe_communicator() {
 }
 
 int main() {
-    CommonBenchmark<pipe_communicator> benchmark{};
+    Benchmark<pipe_communicator> benchmark{};
 
     long avg_time = benchmark.get_avg_time();
 

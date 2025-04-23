@@ -1,7 +1,7 @@
 #include <iostream>
 #include <thread>
 
-#include "common_benchmark.hpp"
+#include "benchmark.hpp"
 
 struct StringBuffer {
     bool m_modified = false;
@@ -37,7 +37,7 @@ void thread_communicator(StringBuffer *common_buffer) {
 
 int main() {
     StringBuffer *common_buffer = new StringBuffer{256};
-    CommonBenchmark<thread_communicator, StringBuffer *> benchmark{};
+    Benchmark<thread_communicator, StringBuffer *> benchmark{};
 
     long avg_time = benchmark.get_avg_time(common_buffer);
 

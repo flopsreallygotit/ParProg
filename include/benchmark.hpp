@@ -3,9 +3,9 @@
 #include <chrono>
 #include <utility>
 
-template <auto Func, typename... Args> class CommonBenchmark final {
+template <auto Func, typename... Args> class Benchmark {
   public:
-    CommonBenchmark(unsigned trials_count = 100)
+    Benchmark(unsigned trials_count = 100)
         : m_trials_count(trials_count) {}
 
     long get_avg_time(Args &...args) {
