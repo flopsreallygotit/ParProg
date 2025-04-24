@@ -14,17 +14,27 @@ class SequentialAccess {
         for (unsigned thread_idx = 0; thread_idx < m_threads.size();
              ++thread_idx)
             m_threads[thread_idx] =
-                std::thread{increment, std::ref(m_access_point), thread_idx};
+                std::thread{increment, std::ref(m_access_point),
+                            std::ref(m_common), thread_idx};
 
         for (unsigned thread_idx = 0; thread_idx < m_threads.size();
              ++thread_idx)
             m_threads[thread_idx].join();
     }
 
+    ~SequentialAccess() {
+        std::cout << "Final value of access point is `" << m_access_point
+                  << "`;\n";
+    }
+
   private:
-    static void increment(int &access_point, const unsigned thread_idx) {
-        std::unique_lock<std::mutex> my_lock{};
+    static void increment(int &access_point, std::mutex &common,
+                          const unsigned thread_idx) {
+        std::unique_lock<std::mutex> my_lock{common};
+
+#ifdef DEBUG
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
+#endif
 
         ++access_point;
         std::cout << "Current value of access point is `" << access_point
@@ -33,6 +43,7 @@ class SequentialAccess {
 
     int m_access_point = 0;
 
+    std::mutex m_common;
     std::vector<std::thread> m_threads;
 };
 
