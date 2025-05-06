@@ -59,7 +59,7 @@ static void pipe_communicator() {
 }
 
 int main() {
-    Benchmark<pipe_communicator> benchmark{};
+    benchmarks::StaticBenchmark<pipe_communicator> benchmark{};
 
     long avg_time = benchmark.get_avg_time();
 

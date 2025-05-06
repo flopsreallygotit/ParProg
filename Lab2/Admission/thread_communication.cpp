@@ -37,7 +37,8 @@ void thread_communicator(StringBuffer *common_buffer) {
 
 int main() {
     StringBuffer *common_buffer = new StringBuffer{256};
-    Benchmark<thread_communicator, StringBuffer *> benchmark{};
+    benchmarks::StaticBenchmark<thread_communicator, StringBuffer *>
+        benchmark{};
 
     long avg_time = benchmark.get_avg_time(common_buffer);
 
