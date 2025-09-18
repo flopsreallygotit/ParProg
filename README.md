@@ -5,7 +5,7 @@
 ### Build
 
 ```bash
-sudo apt install mpich
+sudo apt install mpich libomp-dev
 mkdir build && cd build
 cmake .. && make -j
 ```
@@ -18,7 +18,7 @@ ctest --versbose
 
 ## Description
 
-### Configureation
+### Configuration
 
 CPU: Intel Core i5 11300H (4 cores, 8 threads)
 
