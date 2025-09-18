@@ -16,11 +16,11 @@ cmake .. && make -j
 ctest --versbose
 ```
 
-## Description
-
-### Configuration
+## Configuration
 
 CPU: Intel Core i5 11300H (4 cores, 8 threads)
+
+## Term 6
 
 ### Lab1
 
@@ -83,3 +83,13 @@ Message size: 1024 KB, Avg time: 216.363 us, Bandwidth: 9243.74 MB/s
 Average process communication time is `109953` ns;
 Average thread communication time is `32981` ns;
 ```
+
+---
+
+## Term 7
+
+### Lab3
+
+*OpenMP Strassen matrix mul implementation*
+
+![Strassen scheme](assets/Lab3/strassen.png)
