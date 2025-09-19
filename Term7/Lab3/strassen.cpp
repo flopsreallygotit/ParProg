@@ -1,6 +1,8 @@
+#include <chrono>
 #include <cstddef>
 #include <iostream>
 
+#include "benchmark.hpp"
 #include "matrix.hpp"
 
 using TestMatrix = matrixes::StrassenMatrix<int>;
@@ -14,8 +16,14 @@ void strassen_mul(TestMatrix lhs, TestMatrix rhs) {
     TestMatrix::strassen_multiply(lhs, rhs);
 }
 
+void strassen_parallel_mul(TestMatrix lhs, TestMatrix rhs) {
+    TestMatrix::strassen_multiply_parallel(lhs, rhs);
+}
+
 int main() {
-    const std::size_t powers[] = {5};
+    static constexpr const auto trials_num = 5;
+
+    const std::size_t powers[] = {5, 6, 7, 8};
 
     for (const auto &power : powers) {
         auto lhs = TestMatrix(power);
@@ -24,13 +32,24 @@ int main() {
         lhs.randomize();
         rhs.randomize();
 
-        auto regular = TestMatrix::regular_multiply(lhs, rhs);
-        auto strassen = TestMatrix::strassen_multiply(lhs, rhs);
-        auto strassen_parallel =
-            TestMatrix::strassen_multiply_parallel(lhs, rhs);
+        benchmarks::StaticBenchmark<regular_mul, TestMatrix &, TestMatrix &>
+            regular_benchmark{trials_num};
+        benchmarks::StaticBenchmark<strassen_mul, TestMatrix &, TestMatrix &>
+            strassen_benchmark{trials_num};
+        benchmarks::StaticBenchmark<strassen_parallel_mul, TestMatrix &,
+                                    TestMatrix &>
+            strassen_parallel_benchmark{trials_num};
 
-        bool equal = (regular == strassen) && (strassen == strassen_parallel);
+        auto regular_time = regular_benchmark.get_avg_time(lhs, rhs);
+        auto strassen_time = strassen_benchmark.get_avg_time(lhs, rhs);
+        auto strassen_parallel_time =
+            strassen_parallel_benchmark.get_avg_time(lhs, rhs);
 
-        std::cout << equal;
+        float boost = static_cast<float>(regular_time) / strassen_parallel_time;
+
+        std::cout << "Power = `" << power << "` | Time(ns) Regular: `" << regular_time
+                  << "`; Strassen: `" << strassen_time << "`; Parallel: `"
+                  << strassen_parallel_time << "`;\nBoost: `" << boost
+                  << "`;\n\n";
     }
 }
