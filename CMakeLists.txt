@@ -3,4 +3,6 @@ project(ParProg)
 
 include(CTest)
 
+include_directories(include)
 add_subdirectory(Term6)
+add_subdirectory(Term7)
