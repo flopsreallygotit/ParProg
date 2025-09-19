@@ -7,5 +7,7 @@ else()
     message("OpenMP FOUND dir is ${OpenMP_INCLUDE_DIRS}.")
 endif()
 
+add_executable(strassen_parallel strassen.cpp)
+target_link_libraries(strassen_parallel PUBLIC OpenMP::OpenMP_CXX)
+
 add_executable(strassen strassen.cpp)
-target_compile_options(strassen PRIVATE ${OpenMP_CXX_FLAGS})
