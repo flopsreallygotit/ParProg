@@ -1,24 +1,9 @@
-#include <chrono>
-#include <cstddef>
 #include <iostream>
 
 #include "benchmark.hpp"
 #include "matrix.hpp"
 
 using TestMatrix = matrixes::StrassenMatrix<int>;
-
-// Wrappers for static benchmark
-void regular_mul(TestMatrix lhs, TestMatrix rhs) {
-    TestMatrix::regular_multiply(lhs, rhs);
-}
-
-void strassen_mul(TestMatrix lhs, TestMatrix rhs) {
-    TestMatrix::strassen_multiply(lhs, rhs);
-}
-
-void strassen_parallel_mul(TestMatrix lhs, TestMatrix rhs) {
-    TestMatrix::strassen_multiply_parallel(lhs, rhs);
-}
 
 int main() {
     static constexpr const auto trials_num = 5;
@@ -32,12 +17,14 @@ int main() {
         lhs.randomize();
         rhs.randomize();
 
-        benchmarks::StaticBenchmark<regular_mul, TestMatrix &, TestMatrix &>
-            regular_benchmark{trials_num};
-        benchmarks::StaticBenchmark<strassen_mul, TestMatrix &, TestMatrix &>
-            strassen_benchmark{trials_num};
-        benchmarks::StaticBenchmark<strassen_parallel_mul, TestMatrix &,
+        benchmarks::StaticBenchmark<TestMatrix::regular_multiply, TestMatrix &,
                                     TestMatrix &>
+            regular_benchmark{trials_num};
+        benchmarks::StaticBenchmark<TestMatrix::strassen_multiply, TestMatrix &,
+                                    TestMatrix &>
+            strassen_benchmark{trials_num};
+        benchmarks::StaticBenchmark<TestMatrix::strassen_multiply_parallel,
+                                    TestMatrix &, TestMatrix &>
             strassen_parallel_benchmark{trials_num};
 
         auto regular_time = regular_benchmark.get_avg_time(lhs, rhs);
