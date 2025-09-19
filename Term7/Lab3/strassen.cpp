@@ -47,9 +47,9 @@ int main() {
 
         float boost = static_cast<float>(regular_time) / strassen_parallel_time;
 
-        std::cout << "Power = `" << power << "` | Time(ns) Regular: `" << regular_time
-                  << "`; Strassen: `" << strassen_time << "`; Parallel: `"
-                  << strassen_parallel_time << "`;\nBoost: `" << boost
-                  << "`;\n\n";
+        std::cout << "Power = `" << power << "` | Time(ns) Regular: `"
+                  << regular_time << "`; Strassen: `" << strassen_time
+                  << "`; Parallel: `" << strassen_parallel_time
+                  << "`;\nBoost: `" << boost << "`;\n\n";
     }
 }
