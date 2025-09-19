@@ -8,11 +8,11 @@ using TestMatrix = matrixes::StrassenMatrix<int>;
 int main() {
     static constexpr const auto trials_num = 5;
 
-    const std::size_t powers[] = {5, 6, 7, 8};
+    const std::size_t powers[] = {1, 2, 3, 4, 5, 6, 7, 8};
 
     for (const auto &power : powers) {
-        auto lhs = TestMatrix(power);
-        auto rhs = TestMatrix(power);
+        auto lhs = TestMatrix{power};
+        auto rhs = TestMatrix{power};
 
         lhs.randomize();
         rhs.randomize();
