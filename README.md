@@ -93,3 +93,11 @@ Average thread communication time is `32981` ns;
 *OpenMP Strassen matrix mul implementation*
 
 ![Strassen scheme](assets/Lab3/strassen.png)
+
+**Results**:
+
+Without OpenMP:
+![non-parallel](assets/Lab3/non-parallel.png)
+
+With OpenMP:
+![parallel](assets/Lab3/parallel.png)
