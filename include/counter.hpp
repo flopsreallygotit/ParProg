@@ -3,7 +3,7 @@
 #include <atomic>
 #include <concepts>
 
-template <std::integral T = int> class BoundedCounter {
+template <std::integral T = int> class BoundedCounter final {
   public:
     explicit BoundedCounter(T max_value)
         : m_max_value(max_value), m_current(0) {}

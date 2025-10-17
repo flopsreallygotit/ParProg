@@ -9,7 +9,7 @@
 
 namespace benchmarks {
 
-template <auto Func, typename... Args> class StaticBenchmark {
+template <auto Func, typename... Args> class StaticBenchmark final {
   public:
     StaticBenchmark(unsigned trials_count = 100)
         : m_trials_count(trials_count) {}

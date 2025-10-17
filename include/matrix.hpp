@@ -9,7 +9,7 @@
 
 namespace matrixes {
 
-template <typename T> class StrassenMatrix {
+template <typename T> class StrassenMatrix final {
     static constexpr const auto regular_transfer_power = 3;
 
     std::vector<T> m_intra;
